@@ -53,7 +53,7 @@ begin
    begin
       if(pxl_clk'event and pxl_clk = '1') then
 
-   
+         H <= '0';
       end if;
    end process;
 
@@ -61,7 +61,7 @@ begin
    begin
       if(pxl_clk'event and pxl_clk = '1') then
 
-   
+         V <= '0';
       end if;
    end process;
 
