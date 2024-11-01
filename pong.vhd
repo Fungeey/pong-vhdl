@@ -26,11 +26,13 @@ architecture Behavioral of Pong is
    constant HFP : integer := 16;    -- horizontal front porch
    constant HSP : integer := 96;    -- horizontal sync pulse
    constant HBP : integer := 48;    -- horizontal back porch
+   constant SCREEN_W : integer := HD + HFP + HSP + HBP;
 
    constant VD : integer := 480;    -- screen height
    constant VFP : integer := 10;    -- vertical front porc      
    constant VSP : integer := 2;     -- vertical sync pulse
    constant VBP : integer := 33;    -- vertical back porch
+   constant SCREEN_H : integer := VD + VFP + VSP + VBP;
    
    -- clock signals
    signal clk_counter : integer := 0;
@@ -78,7 +80,24 @@ begin
       end if;
    end process;
 
-   horizontalSync: process(pxl_clk)
+   hvpos: process(pxl_clk)
+   begin
+      if(pxl_clk'event and pxl_clk = '1') then
+         if(hpos >= SCREEN_W) then
+            hpos <= 0; -- reset to start of line
+            
+            if(vpos >= SCREEN_H) then
+               vpos <= 0; -- reset to first line
+            else
+               vpos <= vpos + 1;
+            end if;
+         else
+            hpos <= hpos + 1;
+         end if;
+      end if;
+   end process;
+
+   HVSync: process(pxl_clk, hpos, vpos)
    begin
       if(pxl_clk'event and pxl_clk = '1') then
          if(hpos <= HD + HFP or hpos >= HD + HFP + HSP) then
@@ -86,12 +105,7 @@ begin
          else
             hsync <= '0';
          end if;
-      end if;
-   end process;
 
-   verticalSync: process(pxl_clk)
-   begin
-      if(pxl_clk'event and pxl_clk = '1') then
          if(vpos <= VD + VFP or vpos >= VD + VFP + VSP) then
             vsync <= '1';
          else
