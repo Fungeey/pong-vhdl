@@ -50,15 +50,15 @@ architecture Behavioral of Pong is
    signal B : std_logic_vector(7 downto 0);
 
    -- player signals
-   constant paddle_spd : integer := 4;
-   constant paddle_height : integer := 15;
-   constant p1_x : integer := 0;   -- initialize these
-   constant p2_x : integer := 0;   -- initialize these
+   constant PADDLE_SPD : integer := 4;
+   constant PADDLE_HEIGHT : integer := 15;
+   constant P1_X : integer := 0;   -- initialize these
+   constant P2_X : integer := 0;   -- initialize these
 
    signal p1_y : integer := VD/2;
    signal p2_y : integer := VD/2;
 
-   constant ball_spd : integer := 4;
+   constant BALL_SPD : integer := 4;
 
    signal ball_dir_x : integer := 1;   -- -1 or 1
    signal ball_dir_y : integer := 1;   -- -1 or 1
@@ -114,7 +114,7 @@ begin
       end if;
    end process;
 
-   video : process(pxl_clk)
+   video : process(pxl_clk, hpos, vpos)
    begin
       if(pxl_clk'event and pxl_clk = '1') then
          if(hpos <= HD and vpos <= VD) then
@@ -125,29 +125,29 @@ begin
       end if;
    end process;
 
-   game: process(pxl_clk)
+   game: process(pxl_clk, SW0, SW1, SW2, SW3)
    begin
       if(pxl_clk'event and pxl_clk = '1' and SW0 = '1') then
          -- sw0: pause switch
 
          -- sw1: player 1
          if(SW1 = '1' and p1_y >= 43) then
-            p1_y <= p1_y - paddle_spd;
-         elsif(SW1 = '0' and p1_y + paddle_height <= 440) then
-            p1_y <= p1_y + paddle_spd;
+            p1_y <= p1_y - PADDLE_SPD;
+         elsif(SW1 = '0' and p1_y + PADDLE_HEIGHT <= 440) then
+            p1_y <= p1_y + PADDLE_SPD;
          end if;
 
          -- sw2: player 2
          if(SW2 = '1' and p2_y >= 43) then
-            p2_y <= p2_y - paddle_spd;
-         elsif(SW2 = '0' and p2_y + paddle_height <= 440) then
-            p2_y <= p2_y + paddle_spd;
+            p2_y <= p2_y - PADDLE_SPD;
+         elsif(SW2 = '0' and p2_y + PADDLE_HEIGHT <= 440) then
+            p2_y <= p2_y + PADDLE_SPD;
          end if;
 
          -- ball movement
          -- add checks for walls
-         ball_x <= ball_x + ball_spd * ball_dir_x;
-         ball_y <= ball_y + ball_spd * ball_dir_y;
+         ball_x <= ball_x + BALL_SPD * ball_dir_x;
+         ball_y <= ball_y + BALL_SPD * ball_dir_y;
 
          -- ball_dir_y <= ball_dir_y * -1
 
@@ -161,7 +161,7 @@ begin
       end if;
    end process;
 
-   draw: process(pxl_clk)
+   draw: process(pxl_clk, video_on, hpos, vpos)
    begin
       if(pxl_clk'event and pxl_clk = '1' and video_on = '1') then
          -- if outside screen, must output 1111111
