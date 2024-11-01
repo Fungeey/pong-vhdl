@@ -50,12 +50,12 @@ architecture Behavioral of Pong is
    signal B : std_logic_vector(7 downto 0);
 
    -- player signals
-   constant PADDLE_SPD : integer := 4;
+   constant PADDLE_SPD : integer := 1;
    constant PADDLE_HEIGHT : integer := 15;
-   constant P1_X : integer := 0;   -- initialize these
+   constant P1_X : integer := 5;   -- initialize these
    constant P2_X : integer := 0;   -- initialize these
 
-   signal p1_y : integer := VD/2;
+   signal p1_y : integer := 240; --VD/2
    signal p2_y : integer := VD/2;
 
    constant BALL_SPD : integer := 4;
@@ -85,7 +85,7 @@ begin
       if(pxl_clk'event and pxl_clk = '1') then
          if(hpos >= SCREEN_W) then
             hpos <= 0; -- reset to start of line
-            
+           
             if(vpos >= SCREEN_H) then
                vpos <= 0; -- reset to first line
             else
@@ -127,8 +127,9 @@ begin
 
    game: process(pxl_clk, SW0, SW1, SW2, SW3)
    begin
-      if(pxl_clk'event and pxl_clk = '1' and SW0 = '1') then
+      if(pxl_clk'event and pxl_clk = '1') then
          -- sw0: pause switch
+-- and SW0 = '1'
 
          -- sw1: player 1
          if(SW1 = '1' and p1_y >= 43) then
@@ -161,20 +162,36 @@ begin
       end if;
    end process;
 
-   draw: process(pxl_clk, video_on, hpos, vpos)
+   draw: process(pxl_clk, video_on, hpos, vpos, p1_y)
    begin
       if(pxl_clk'event and pxl_clk = '1' and video_on = '1') then
          -- if outside screen, must output 1111111
          -- else, display colors
 
+
+
          -- edges
-         if(hpos >= 25 and hpos <= 615 and ((vpos >= 34 and vpos <= 45) or (vpos >= 435 and vpos <= 446))) then
+         --if(hpos >= 25 and hpos <= 615 and ((vpos >= 34 and vpos <= 45) or (vpos >= 435 and vpos <= 446))) then
+         if(hpos > HD or vpos > VD) then
+         -- all 1s = black in the porch
             R <= "11111111";
             G <= "11111111";
             B <= "11111111";
+         --and (vpos < p1_y + 5 or vpos > p1_y - 5)
+         elsif(hpos < 100) then
+            R <= "11111111";
+            G <= "11111111";
+            B <= "11111111";
+         elsif(hpos > 100) then
+            R <= "11110000";
+            G <= "11001111";
+            B <= "00001111";
          end if;
 
-         -- board
+
+         
+
+-- board
 
          -- paddle 1
 
