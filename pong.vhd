@@ -50,8 +50,8 @@ architecture Behavioral of Pong is
    -- player signals
    constant paddle_spd : integer := 4;
    constant paddle_height : integer := 15;
-   constant p1_x := integer := 0;   -- initialize these
-   constant p2_x := integer := 0;   -- initialize these
+   constant p1_x : integer := 0;   -- initialize these
+   constant p2_x : integer := 0;   -- initialize these
 
    signal p1_y : integer := VD/2;
    signal p2_y : integer := VD/2;
@@ -61,7 +61,7 @@ architecture Behavioral of Pong is
    signal ball_dir_x : integer := 1;   -- -1 or 1
    signal ball_dir_y : integer := 1;   -- -1 or 1
    signal ball_x : integer := HD/2;
-   signal ball_y := integer := VD/2;
+   signal ball_y : integer := VD/2;
 
 begin
    
@@ -154,7 +154,7 @@ begin
          -- else, display colors
 
          -- edges
-         if(25 <= hpos <= 615 and (34 <= vpos <= 45 or 435 <= vpos <= 446))
+         if(hpos >= 25 and hpos <= 615 and ((vpos >= 34 and vpos <= 45) or (vpos >= 435 and vpos <= 446))) then
             R <= "11111111";
             G <= "11111111";
             B <= "11111111";
