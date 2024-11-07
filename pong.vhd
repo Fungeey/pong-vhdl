@@ -168,17 +168,16 @@ begin
             elsif(SW0 = '0' and p2_y <= VD-MARGIN-BORDER - P_HEIGHT/2) then
                p2_y <= p2_y + P_SPD;
             end if;
+
+            -- ball movement
+            ball_x <= ball_x + BALL_SPD * ball_dir_x;
+            ball_y <= ball_y + BALL_SPD * ball_dir_y;
+
+            -- add checks for walls
+            -- bounce \/
+            -- ball_dir_y <= ball_dir_y * -1
+
          end if;
-
-         -- ball movement
-         -- add checks for walls
-         ball_x <= ball_x + BALL_SPD * ball_dir_x;
-         ball_y <= ball_y + BALL_SPD * ball_dir_y;
-
-         -- ball_dir_y <= ball_dir_y * -1
-
-
-
 
          --sw1: reset
          if(SW1'event and SW1 = '1') then
@@ -230,20 +229,17 @@ begin
             R <= "11111111";
             G <= "00000000"; -- purple 
             B <= "11111111";
+         
+
+         -- ball
+         
+         
+         
          else
             R <= "00000000";
             G <= "11111111"; -- green
             B <= "00000000";
          end if;
-
-         -- board
-
-         -- paddle 1
-
-         -- paddle 2
-
-         -- ball
-
       end if;
    end process;
 
