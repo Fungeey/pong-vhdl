@@ -22,13 +22,13 @@ end Pong;
 
 architecture Behavioral of Pong is
    -- CONSTANTS
-   constant HD : integer := 640;    -- screen width
+   constant HD : integer := 640;    -- visible screen width
    constant HFP : integer := 16;    -- horizontal front porch
    constant HSP : integer := 96;    -- horizontal sync pulse
    constant HBP : integer := 48;    -- horizontal back porch
    constant SCREEN_W : integer := HD + HFP + HSP + HBP; -- 800
 
-   constant VD : integer := 480;    -- screen height
+   constant VD : integer := 480;    -- visible screen height
    constant VFP : integer := 10;    -- vertical front porc      
    constant VSP : integer := 2;     -- vertical sync pulse
    constant VBP : integer := 33;    -- vertical back porch
@@ -54,9 +54,9 @@ architecture Behavioral of Pong is
    constant MARGIN : integer := 25;
 
    -- player signals
-   constant PADDLE_SPD : integer := 1;
-   constant PADDLE_WIDTH : integer := 10;
-   constant PADDLE_HEIGHT : integer := 100;
+   constant P_SPD : integer := 1;
+   constant P_WIDTH : integer := 10;
+   constant P_HEIGHT : integer := 100;
    constant P1_X : integer := 50;
    constant P2_X : integer := 590;
 
@@ -156,17 +156,17 @@ begin
          if(movementTick = '1') then
 
             -- sw1: player 1
-            if(SW3 = '1' and p1_y >= MARGIN+BORDER + PADDLE_HEIGHT/2) then
-               p1_y <= p1_y - PADDLE_SPD;
-            elsif(SW3 = '0' and p1_y <= VD-MARGIN-BORDER- PADDLE_HEIGHT/2) then
-               p1_y <= p1_y + PADDLE_SPD;
+            if(SW3 = '1' and p1_y >= MARGIN+BORDER + P_HEIGHT/2) then
+               p1_y <= p1_y - P_SPD;
+            elsif(SW3 = '0' and p1_y <= VD-MARGIN-BORDER - P_HEIGHT/2) then
+               p1_y <= p1_y + P_SPD;
             end if;
 
-            -- sw2: player 2
-            if(SW0 = '1' and p2_y >= 43) then
-               p2_y <= p2_y - PADDLE_SPD;
-            elsif(SW0 = '0' and p2_y + PADDLE_HEIGHT <= 440) then
-               p2_y <= p2_y + PADDLE_SPD;
+            -- sw0: player 2
+            if(SW0 = '1' and p2_y >= MARGIN+BORDER + P_HEIGHT/2) then
+               p2_y <= p2_y - P_SPD;
+            elsif(SW0 = '0' and p2_y <= VD-MARGIN-BORDER - P_HEIGHT/2) then
+               p2_y <= p2_y + P_SPD;
             end if;
          end if;
 
@@ -180,8 +180,8 @@ begin
 
 
 
-         --sw2: reset
-         if(SW2'event and SW2 = '1') then
+         --sw1: reset
+         if(SW1'event and SW1 = '1') then
             -- reset variables
             p1_y <= VD/2;
             p2_y <= VD/2;
@@ -220,12 +220,12 @@ begin
             R <= "00000000";
             G <= "00000000"; -- black
             B <= "00000000";
-         elsif(hpos >= P1_X-PADDLE_WIDTH/2 and hpos <= P1_X+PADDLE_WIDTH/2 and vpos >= p1_y - PADDLE_HEIGHT/2 and vpos <= p1_y + PADDLE_HEIGHT/2) then
+         elsif(hpos >= P1_X-P_WIDTH/2 and hpos <= P1_X+P_WIDTH/2 and vpos >= p1_y - P_HEIGHT/2 and vpos <= p1_y + P_HEIGHT/2) then
             -- player 1
             R <= "00000000";
             G <= "00000000";
             B <= "11111111"; -- full blue
-         elsif(hpos >= P2_X-PADDLE_WIDTH/2 and hpos <= P2_X+PADDLE_WIDTH/2 and vpos >= p2_y - PADDLE_HEIGHT/2 and vpos <= p2_y + PADDLE_HEIGHT/2) then
+         elsif(hpos >= P2_X-P_WIDTH/2 and hpos <= P2_X+P_WIDTH/2 and vpos >= p2_y - P_HEIGHT/2 and vpos <= p2_y + P_HEIGHT/2) then
             -- player 2
             R <= "11111111";
             G <= "00000000"; -- purple 
