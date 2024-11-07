@@ -26,13 +26,13 @@ architecture Behavioral of Pong is
    constant HFP : integer := 16;    -- horizontal front porch
    constant HSP : integer := 96;    -- horizontal sync pulse
    constant HBP : integer := 48;    -- horizontal back porch
-   constant SCREEN_W : integer := HD + HFP + HSP + HBP;
+   constant SCREEN_W : integer := HD + HFP + HSP + HBP; -- 800
 
    constant VD : integer := 480;    -- screen height
    constant VFP : integer := 10;    -- vertical front porc      
    constant VSP : integer := 2;     -- vertical sync pulse
    constant VBP : integer := 33;    -- vertical back porch
-   constant SCREEN_H : integer := VD + VFP + VSP + VBP;
+   constant SCREEN_H : integer := VD + VFP + VSP + VBP; -- 525
    
    -- clock signals
    signal clk_counter : integer := 0;
