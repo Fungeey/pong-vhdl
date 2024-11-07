@@ -57,10 +57,10 @@ architecture Behavioral of Pong is
    constant PADDLE_SPD : integer := 1;
    constant PADDLE_WIDTH : integer := 10;
    constant PADDLE_HEIGHT : integer := 100;
-   constant P1_X : integer := 50;   -- initialize these
-   constant P2_X : integer := 590;   -- initialize these
+   constant P1_X : integer := 50;
+   constant P2_X : integer := 590;
 
-   signal p1_y : integer := VD/2; --VD/2
+   signal p1_y : integer := VD/2;
    signal p2_y : integer := VD/2;
 
    constant BALL_SPD : integer := 4;
@@ -196,43 +196,43 @@ begin
    begin
       if(pxl_clk'event and pxl_clk = '1' and video_on = '1') then
          if(hpos > HD or vpos > VD) then
-            -- all 1s = white in the porch
-            -- if outside screen, must output 1111111
+            -- all 0s = black in the porch
+            -- if outside screen, must output 00000000
             -- else, display colors
             R <= "00000000";
-            G <= "00000000";
+            G <= "00000000"; -- black
             B <= "00000000";
          elsif(hpos >= MARGIN and hpos <= HD-MARGIN and
          ((vpos >= MARGIN and vpos <= MARGIN + BORDER) or
          (vpos >= VD-MARGIN-BORDER and vpos <= VD-MARGIN))) then
             -- horizontal borders
             R <= "11111111";
-            G <= "11111111";
+            G <= "11111111"; -- white
             B <= "11111111";
-         elsif(((hpos >= MARGIN and hpos <= MARGIN + BORDER) or (hpos >= 604 and hpos <= 615)) and
-         ((vpos >= 34 and vpos <= 112) or (vpos >= 370 and vpos <= 446))) then
+         elsif(((hpos >= MARGIN and hpos <= MARGIN + BORDER) or (hpos >= VD-MARGIN-BORDER and hpos <= VD-MARGIN)) and
+         ((vpos >= MARGIN+BORDER and vpos <= MARGIN+BORDER+80) or (vpos >= VD-MARGIN-BORDER-80 and vpos <= VD-MARGIN-BORDER))) then
             -- vertical borders
             R <= "11111111";
-            G <= "11111111";
+            G <= "11111111"; -- white
             B <= "11111111";
-         elsif(hpos >= HD/2-2 and hpos <= HD/2+2 and (vpos mod 64 >= 32) and vpos >= 45 and vpos <= 435) then
-         -- black middle line
+         elsif(hpos >= HD/2-2 and hpos <= HD/2+2 and (vpos mod 64 >= 32) and vpos >= MARGIN+BORDER and vpos <= VD-MARGIN-BORDER) then
+            -- black middle line
             R <= "00000000";
-            G <= "00000000";
+            G <= "00000000"; -- black
             B <= "00000000";
          elsif(hpos >= P1_X-PADDLE_WIDTH/2 and hpos <= P1_X+PADDLE_WIDTH/2 and vpos >= p1_y - PADDLE_HEIGHT/2 and vpos <= p1_y + PADDLE_HEIGHT/2) then
-         -- player 1
+            -- player 1
             R <= "00000000";
             G <= "00000000";
-            B <= "11111111";
+            B <= "11111111"; -- full blue
          elsif(hpos >= P2_X-PADDLE_WIDTH/2 and hpos <= P2_X+PADDLE_WIDTH/2 and vpos >= p2_y - PADDLE_HEIGHT/2 and vpos <= p2_y + PADDLE_HEIGHT/2) then
             -- player 2
             R <= "11111111";
-            G <= "00000000";
+            G <= "00000000"; -- purple 
             B <= "11111111";
          else
             R <= "00000000";
-            G <= "11111111";
+            G <= "11111111"; -- green
             B <= "00000000";
          end if;
 
