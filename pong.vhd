@@ -69,7 +69,7 @@ architecture Behavioral of Pong is
    signal ball_dir_y : integer := 1;   -- -1 or 1
    signal ball_x : integer := HD/2;
    signal ball_y : integer := VD/2;
-   signal ball_length : integer = 10;
+   signal ball_length : integer := 10;
 
    signal movementTick : std_logic;
    signal movCounter : integer := 0;
