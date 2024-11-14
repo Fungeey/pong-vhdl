@@ -1,3 +1,5 @@
+
+
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
@@ -63,12 +65,13 @@ architecture Behavioral of Pong is
    signal p1_y : integer := VD/2;
    signal p2_y : integer := VD/2;
 
-   constant BALL_SPD : integer := 4;
+   constant BALL_SPD : integer := 1;
 
-   signal ball_dir_x : integer := 1;   -- -1 or 1
-   signal ball_dir_y : integer := 1;   -- -1 or 1
+   signal ball_dir_x : integer := 1;   -- 1 or 2
+   signal ball_dir_y : integer := 1;   -- 1 or 2
    signal ball_x : integer := HD/2;
    signal ball_y : integer := VD/2;
+   signal ball_length : integer := 10;
 
    signal movementTick : std_logic;
    signal movCounter : integer := 0;
@@ -78,27 +81,22 @@ begin
    generateClk: process(clk)
    begin
       if(clk'event and clk = '1') then
-         clk_counter <= clk_counter + 1;
-
-         if(clk_counter mod 2 = 0) then
-            pxl_clk <= '1';
-         else
-            pxl_clk <= '0';
-         end if;
-
+         pxl_clk <= not pxl_clk;
       end if;
    end process;
 
    moveDelay: process(pxl_clk)
    begin
-      movCounter <= movCounter + 1;
+if(pxl_clk'event and pxl_clk = '1') then
+movCounter <= movCounter + 1;
 
-      if(movCounter >= 90000) then
-         movementTick <= '1';
-         movCounter <= 0;
-      else
-         movementTick <= '0';
-      end if;
+if(movCounter >= 120000) then
+movementTick <= '1';
+movCounter <= 0;
+else
+movementTick <= '0';
+end if;
+end if;
 
    end process;
 
@@ -153,39 +151,56 @@ begin
          -- sw2: pause switch
          -- and SW2 = '1'
 
-         if(movementTick = '1') then
-
-            -- sw1: player 1
-            if(SW3 = '1' and p1_y >= MARGIN+BORDER + P_HEIGHT/2) then
-               p1_y <= p1_y - P_SPD;
-            elsif(SW3 = '0' and p1_y <= VD-MARGIN-BORDER - P_HEIGHT/2) then
-               p1_y <= p1_y + P_SPD;
-            end if;
-
-            -- sw0: player 2
-            if(SW0 = '1' and p2_y >= MARGIN+BORDER + P_HEIGHT/2) then
-               p2_y <= p2_y - P_SPD;
-            elsif(SW0 = '0' and p2_y <= VD-MARGIN-BORDER - P_HEIGHT/2) then
-               p2_y <= p2_y + P_SPD;
-            end if;
-
-            -- ball movement
-            ball_x <= ball_x + BALL_SPD * ball_dir_x;
-            ball_y <= ball_y + BALL_SPD * ball_dir_y;
-
-            -- add checks for walls
-            -- bounce \/
-            -- ball_dir_y <= ball_dir_y * -1
-
-         end if;
-
-         --sw1: reset
-         if(SW1'event and SW1 = '1') then
+--sw1: reset
+         if(SW1 = '1') then
             -- reset variables
             p1_y <= VD/2;
             p2_y <= VD/2;
             ball_x <= HD/2;
             ball_y <= VD/2;
+
+         elsif(movementTick = '1') then
+
+            -- sw1: player 1
+            if(SW3 = '1' and p1_y > MARGIN+BORDER + P_HEIGHT/2) then
+               p1_y <= p1_y - P_SPD;
+            elsif(SW3 = '0' and p1_y < VD-MARGIN-BORDER - P_HEIGHT/2) then
+               p1_y <= p1_y + P_SPD;
+            end if;
+
+            -- sw0: player 2
+            if(SW0 = '1' and p2_y > MARGIN+BORDER + P_HEIGHT/2) then
+               p2_y <= p2_y - P_SPD;
+            elsif(SW0 = '0' and p2_y < VD-MARGIN-BORDER - P_HEIGHT/2) then
+               p2_y <= p2_y + P_SPD;
+            end if;
+
+            -- ball movement
+            ball_x <= ball_x + ball_dir_x;
+            ball_y <= ball_y + ball_dir_y;
+
+if(
+(ball_x < MARGIN+BORDER and (ball_y < MARGIN+BORDER+80 or ball_y > VD-MARGIN-BORDER-80)) or
+(ball_x < P1_x + P_WIDTH and (ball_y > p1_y + P_HEIGHT/2 or ball_y < p1_y - P_HEIGHT/2))
+) then
+ball_dir_x <= 1;
+elsif(
+(ball_x > HD-MARGIN-BORDER and (ball_y < MARGIN+BORDER+80 or ball_y > VD-MARGIN-BORDER-80)) or
+(ball_x < P2_x + P_WIDTH and (ball_y > p2_y + P_HEIGHT/2 or ball_y < p2_y - P_HEIGHT/2))
+) then
+ball_dir_x <= -1;
+end if;
+
+if(ball_y < MARGIN+BORDER) then-- and ball_y < p1_y+P_HEIGHT) then
+ball_dir_y <= 1;
+elsif(ball_y > VD-MARGIN-BORDER) then-- and ball_y > p1_y - P_HEIGHT) then
+ball_dir_y <= -1;
+end if;
+
+            -- add checks for walls
+            -- bounce \/
+            -- ball_dir_y <= ball_dir_y * -1
+
          end if;
 
       end if;
@@ -208,7 +223,7 @@ begin
             R <= "11111111";
             G <= "11111111"; -- white
             B <= "11111111";
-         elsif(((hpos >= MARGIN and hpos <= MARGIN + BORDER) or (hpos >= VD-MARGIN-BORDER and hpos <= VD-MARGIN)) and
+         elsif(((hpos >= MARGIN and hpos <= MARGIN + BORDER) or (hpos >= HD-MARGIN-BORDER and hpos <= HD-MARGIN)) and
          ((vpos >= MARGIN+BORDER and vpos <= MARGIN+BORDER+80) or (vpos >= VD-MARGIN-BORDER-80 and vpos <= VD-MARGIN-BORDER))) then
             -- vertical borders
             R <= "11111111";
@@ -227,14 +242,13 @@ begin
          elsif(hpos >= P2_X-P_WIDTH/2 and hpos <= P2_X+P_WIDTH/2 and vpos >= p2_y - P_HEIGHT/2 and vpos <= p2_y + P_HEIGHT/2) then
             -- player 2
             R <= "11111111";
-            G <= "00000000"; -- purple 
+            G <= "00000000"; -- purple
             B <= "11111111";
-         
-
          -- ball
-         
-         
-         
+         elsif(hpos > ball_x-ball_length/2 and hpos < ball_x+ball_length/2 and vpos > ball_y-ball_length/2 and vpos < ball_y+ball_length/2) then
+            R <= "11111111";
+            G <= "11111111"; -- yellow
+            B <= "00000000";
          else
             R <= "00000000";
             G <= "11111111"; -- green
