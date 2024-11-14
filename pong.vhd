@@ -69,6 +69,7 @@ architecture Behavioral of Pong is
    signal ball_dir_y : integer := 1;   -- -1 or 1
    signal ball_x : integer := HD/2;
    signal ball_y : integer := VD/2;
+   signal ball_length : integer = 10;
 
    signal movementTick : std_logic;
    signal movCounter : integer := 0;
@@ -229,12 +230,11 @@ begin
             R <= "11111111";
             G <= "00000000"; -- purple 
             B <= "11111111";
-         
-
          -- ball
-         
-         
-         
+         elsif(hpos >= ball_x-ball_length/2 and hpos <= ball_x+ball_length/2 and vpos >= ball_y-ball_length/2 and vpos <= ball_y+ball_length/2) then
+            R <= "11111111";
+            G <= "11111111"; -- yellow 
+            B <= "00000000";
          else
             R <= "00000000";
             G <= "11111111"; -- green
