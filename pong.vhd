@@ -245,10 +245,9 @@ end if;
             G <= "00000000"; -- purple
             B <= "11111111";
          -- ball
-         elsif(hpos > ball_x-ball_length/2 and hpos < ball_x+ball_length/2 and vpos > ball_y-ball_length/2 and vpos < ball_y+ball_length/2) then
-            R <= "11111111";
-            G <= "11111111"; -- yellow
-            B <= "00000000";
+         
+         
+         
          else
             R <= "00000000";
             G <= "11111111"; -- green
